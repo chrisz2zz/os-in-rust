@@ -7,7 +7,8 @@ mod vga_buffer;
 
 /// 这个函数将在 panic 时被调用
 #[panic_handler] 
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
 
@@ -18,6 +19,7 @@ pub extern "C" fn _start() -> ! {
     // 因为编译器会寻找一个名为 `_start` 的函数，所以这个函数就是入口点
     // 默认命名为 `_start`
 
-    vga_buffer::print_something();
+    println!("Hello World{}", "!");
+    panic!("Some panic message");
     loop {}
 }

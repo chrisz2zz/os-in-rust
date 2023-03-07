@@ -131,3 +131,33 @@ pub fn print_something() {
     write!(writer, "The number are {} and {}", 42, 1.0/3.0).unwrap();
     // writer.write_string("Wörld!");
 }
+
+use lazy_static::lazy_static;
+use spin::Mutex;
+
+lazy_static!{
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe {
+            &mut *(0xb8000 as *mut Buffer)
+        },
+    });
+}
+
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    WRITER.lock().write_fmt(args).unwrap();
+}
