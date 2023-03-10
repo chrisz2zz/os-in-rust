@@ -7,6 +7,7 @@
 use core::panic::PanicInfo;
 
 mod vga_buffer;
+mod serial;
 
 /// 这个函数将在 panic 时被调用
 #[panic_handler] 
