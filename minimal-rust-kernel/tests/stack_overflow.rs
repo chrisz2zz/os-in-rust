@@ -3,8 +3,8 @@
 #![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
-use minimal_rust_kernel::{serial_print, exit_qemu, QemuExitCode, serial_println};
 use lazy_static::lazy_static;
+use minimal_rust_kernel::{exit_qemu, serial_print, serial_println, QemuExitCode};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 lazy_static! {
@@ -12,8 +12,8 @@ lazy_static! {
         let mut idt = InterruptDescriptorTable::new();
         unsafe {
             idt.double_fault
-            .set_handler_fn(test_double_fault_handler)
-            .set_stack_index(minimal_rust_kernel::gdt::DOUBLE_FAULT_IST_INDEX);
+                .set_handler_fn(test_double_fault_handler)
+                .set_stack_index(minimal_rust_kernel::gdt::DOUBLE_FAULT_IST_INDEX);
         }
         idt
     };
@@ -35,7 +35,7 @@ extern "x86-interrupt" fn test_double_fault_handler(
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     serial_print!("stack_overflow::stack_overflow...\t");
-    
+
     minimal_rust_kernel::gdt::init();
     init_test_idt();
 

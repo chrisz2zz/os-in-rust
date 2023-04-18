@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use minimal_rust_kernel::{QemuExitCode, exit_qemu, serial_println};
+use minimal_rust_kernel::{exit_qemu, serial_println, QemuExitCode};
 
 #[no_mangle]
 pub extern "C" fn _start() {
@@ -23,7 +23,6 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 use minimal_rust_kernel::serial_print;
-
 
 fn should_fail() {
     serial_print!("should_fail... ");
