@@ -7,20 +7,33 @@
 use core::panic::PanicInfo;
 use minimal_rust_kernel::println;
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+use bootloader::{entry_point, BootInfo};
+use x86_64::{structures::paging::PageTable, VirtAddr};
+
+entry_point!(kernel_main);
+
+fn kernel_main(boot_info: &'static BootInfo) -> ! {
+    use minimal_rust_kernel::memory::translate_addr;
     println!("Hello World{}", "!");
 
     minimal_rust_kernel::init();
-    // unsafe {
-    //     *(0xdeadbeef as *mut u64) = 42;
-    // };
 
-    // fn stack_overflow() {
-    //     stack_overflow();
-    // }
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
 
-    // stack_overflow();
+    let addresses = [
+        0xb8000,
+        0x201008,
+        0x0100_0020_1a10,
+        boot_info.physical_memory_offset,
+    ];
+
+    for &address in &addresses {
+        let virt = VirtAddr::new(address);
+        let phys = unsafe {
+            translate_addr(virt, phys_mem_offset)
+        };
+        println!("{:?} -> {:?}", virt, phys);
+    }
 
     #[cfg(test)]
     test_main();
